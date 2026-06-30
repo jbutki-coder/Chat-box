@@ -9,6 +9,10 @@ const twilio = require("twilio");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Render and most hosting platforms put Express behind a proxy.
+// This lets express-rate-limit safely read the real visitor IP from X-Forwarded-For.
+app.set("trust proxy", 1);
+
 const allowedFrameAncestors = (process.env.ALLOWED_FRAME_ANCESTORS || "*")
   .split(",")
   .map((item) => item.trim())
