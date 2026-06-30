@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Message Us</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="chat-shell">
+    <section class="chat-card" aria-labelledby="chat-title">
+      <div class="chat-header">
+        <p class="eyebrow">Website message</p>
+        <h1 id="chat-title">Send us a message</h1>
+        <p class="intro">This goes straight to the person managing the site.</p>
+      </div>
+
+      <form id="messageForm" class="chat-form" novalidate>
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="Your name" />
+
+        <label for="phone">Phone number</label>
+        <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="Your phone number" />
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="6" maxlength="900" required placeholder="Type your message here..."></textarea>
+
+        <label class="consent-row">
+          <input id="consent" name="consent" type="checkbox" />
+          <span>I agree to be contacted by text message about this request.</span>
+        </label>
+
+        <label class="hidden-field" aria-hidden="true">
+          Company
+          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+        </label>
+
+        <button id="sendButton" type="submit">Send message</button>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
