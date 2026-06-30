@@ -1,0 +1,95 @@
+<!-- Paste this into a WordPress Custom HTML block. Replace the iframe src with your Render URL. -->
+<style>
+  .sms-chat-launcher {
+    border: 0;
+    background: #181512;
+    color: #fff7e8;
+    padding: 14px 18px;
+    font: 700 18px Georgia, "Times New Roman", serif;
+    cursor: pointer;
+  }
+
+  .sms-chat-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.72);
+    padding: 20px;
+  }
+
+  .sms-chat-modal.is-open {
+    display: grid;
+    place-items: center;
+  }
+
+  .sms-chat-box {
+    width: min(640px, 100%);
+    height: min(760px, 92vh);
+    background: #f1eadf;
+    position: relative;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  }
+
+  .sms-chat-close {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    z-index: 2;
+    border: 0;
+    background: #181512;
+    color: #fff7e8;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  .sms-chat-frame {
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+</style>
+
+<button class="sms-chat-launcher" type="button" data-chat-open>
+  Send us a message
+</button>
+
+<div class="sms-chat-modal" data-chat-modal aria-hidden="true">
+  <div class="sms-chat-box" role="dialog" aria-modal="true" aria-label="Send us a message">
+    <button class="sms-chat-close" type="button" data-chat-close aria-label="Close">×</button>
+    <iframe
+      class="sms-chat-frame"
+      title="Website message form"
+      src="https://YOUR-RENDER-SERVICE.onrender.com">
+    </iframe>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const modal = document.querySelector("[data-chat-modal]");
+    const openButton = document.querySelector("[data-chat-open]");
+    const closeButton = document.querySelector("[data-chat-close]");
+
+    function openModal() {
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal() {
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    openButton.addEventListener("click", openModal);
+    closeButton.addEventListener("click", closeModal);
+    modal.addEventListener("click", function (event) {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeModal();
+    });
+  })();
+</script>
