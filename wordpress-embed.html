@@ -1,95 +1,66 @@
-<!-- Paste this into a WordPress Custom HTML block. Replace the iframe src with your Render URL. -->
+<!-- Simple iframe embed. Replace the src with your Render URL. -->
+<iframe
+  src="https://YOUR-RENDER-URL.onrender.com"
+  width="100%"
+  height="760"
+  style="border:0; max-width:980px; display:block; margin:0 auto;"
+  loading="lazy"
+  title="Website Messenger">
+</iframe>
+
+<!-- Optional button + popup/lightbox style embed. Replace the src with your Render URL. -->
 <style>
-  .sms-chat-launcher {
+  .im-chat-launcher {
     border: 0;
-    background: #181512;
-    color: #fff7e8;
+    background: #123c7a;
+    color: white;
+    font: 700 16px Arial, sans-serif;
     padding: 14px 18px;
-    font: 700 18px Georgia, "Times New Roman", serif;
     cursor: pointer;
   }
-
-  .sms-chat-modal {
+  .im-chat-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    z-index: 99999;
-    background: rgba(0, 0, 0, 0.72);
-    padding: 20px;
+    z-index: 999999;
+    background: rgba(0,0,0,.72);
+    padding: 18px;
   }
-
-  .sms-chat-modal.is-open {
+  .im-chat-overlay.is-open {
     display: grid;
     place-items: center;
   }
-
-  .sms-chat-box {
-    width: min(640px, 100%);
-    height: min(760px, 92vh);
-    background: #f1eadf;
+  .im-chat-modal {
+    width: min(980px, 100%);
+    height: min(820px, 94vh);
+    background: white;
     position: relative;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
   }
-
-  .sms-chat-close {
+  .im-chat-close {
     position: absolute;
-    right: 8px;
-    top: 8px;
+    right: 10px;
+    top: 10px;
     z-index: 2;
     border: 0;
-    background: #181512;
-    color: #fff7e8;
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
+    background: #111;
+    color: #fff;
+    padding: 8px 10px;
     cursor: pointer;
   }
-
-  .sms-chat-frame {
+  .im-chat-modal iframe {
     width: 100%;
     height: 100%;
     border: 0;
   }
 </style>
 
-<button class="sms-chat-launcher" type="button" data-chat-open>
-  Send us a message
+<button class="im-chat-launcher" type="button" onclick="document.querySelector('.im-chat-overlay').classList.add('is-open')">
+  Message Us
 </button>
 
-<div class="sms-chat-modal" data-chat-modal aria-hidden="true">
-  <div class="sms-chat-box" role="dialog" aria-modal="true" aria-label="Send us a message">
-    <button class="sms-chat-close" type="button" data-chat-close aria-label="Close">×</button>
-    <iframe
-      class="sms-chat-frame"
-      title="Website message form"
-      src="https://YOUR-RENDER-SERVICE.onrender.com">
-    </iframe>
+<div class="im-chat-overlay" onclick="if(event.target === this) this.classList.remove('is-open')">
+  <div class="im-chat-modal">
+    <button class="im-chat-close" type="button" onclick="document.querySelector('.im-chat-overlay').classList.remove('is-open')">Close</button>
+    <iframe src="https://YOUR-RENDER-URL.onrender.com" title="Website Messenger"></iframe>
   </div>
 </div>
-
-<script>
-  (function () {
-    const modal = document.querySelector("[data-chat-modal]");
-    const openButton = document.querySelector("[data-chat-open]");
-    const closeButton = document.querySelector("[data-chat-close]");
-
-    function openModal() {
-      modal.classList.add("is-open");
-      modal.setAttribute("aria-hidden", "false");
-    }
-
-    function closeModal() {
-      modal.classList.remove("is-open");
-      modal.setAttribute("aria-hidden", "true");
-    }
-
-    openButton.addEventListener("click", openModal);
-    closeButton.addEventListener("click", closeModal);
-    modal.addEventListener("click", function (event) {
-      if (event.target === modal) closeModal();
-    });
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") closeModal();
-    });
-  })();
-</script>
