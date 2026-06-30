@@ -1,26 +1,8 @@
 services:
   - type: web
-    name: wp-sms-chatbox-render
+    name: wp-sms-chatbox-aim-style
     env: node
     plan: free
     buildCommand: npm install
     startCommand: npm start
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: TWILIO_ACCOUNT_SID
-        sync: false
-      - key: TWILIO_AUTH_TOKEN
-        sync: false
-      - key: TWILIO_PHONE_NUMBER
-        sync: false
-      - key: TWILIO_MESSAGING_SERVICE_SID
-        sync: false
-      - key: NOTIFY_PHONE_NUMBER
-        sync: false
-      - key: ALLOWED_FRAME_ANCESTORS
-        value: "*"
-      - key: DRY_RUN
-        value: "false"
-      - key: RATE_LIMIT_PER_10_MINUTES
-        value: "5"
+    autoDeploy: true
