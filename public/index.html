@@ -3,41 +3,79 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Message Us</title>
+  <title>Website Messenger</title>
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <main class="chat-shell">
-    <section class="chat-card" aria-labelledby="chat-title">
-      <div class="chat-header">
-        <p class="eyebrow">Website message</p>
-        <h1 id="chat-title">Send us a message</h1>
-        <p class="intro">This goes straight to the person managing the site.</p>
+  <main class="desktop" aria-label="Website messenger">
+    <section class="im-window" aria-labelledby="im-title">
+      <header class="title-bar">
+        <div class="title-text" id="im-title">Website Messenger</div>
+        <div class="window-buttons" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+      </header>
+
+      <div class="menu-bar" aria-hidden="true">
+        <span>File</span>
+        <span>Edit</span>
+        <span>People</span>
+        <span>Message</span>
+        <span>Help</span>
       </div>
 
-      <form id="messageForm" class="chat-form" novalidate>
-        <label for="name">Name</label>
-        <input id="name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="Your name" />
+      <div class="im-layout">
+        <aside class="buddy-panel" aria-label="Messenger status">
+          <div class="screen-name-box">
+            <div class="small-label">You are</div>
+            <input id="name" name="name" type="text" autocomplete="name" maxlength="80" placeholder="Guest" />
+          </div>
 
-        <label for="phone">Phone number</label>
-        <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="Your phone number" />
+          <div class="buddy-list">
+            <div class="buddy-heading">Available</div>
+            <div class="buddy-row active">Site Manager</div>
+            <div class="buddy-heading">Away Message</div>
+            <p class="away-text">Messages go straight to the phone managing this site.</p>
+          </div>
+        </aside>
 
-        <label for="message">Message</label>
-        <textarea id="message" name="message" rows="6" maxlength="900" required placeholder="Type your message here..."></textarea>
+        <section class="chat-area">
+          <div class="status-line">
+            <strong>Site Manager</strong> is reachable by text message.
+          </div>
 
-        <label class="consent-row">
-          <input id="consent" name="consent" type="checkbox" />
-          <span>I agree to be contacted by text message about this request.</span>
-        </label>
+          <div id="transcript" class="transcript" role="log" aria-live="polite" aria-relevant="additions">
+            <div class="line system-line">
+              <span class="stamp">System</span>
+              <p>Type a message below. Leave your phone number if you want someone to text you back.</p>
+            </div>
+          </div>
 
-        <label class="hidden-field" aria-hidden="true">
-          Company
-          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
-        </label>
+          <form id="chatForm" class="composer" novalidate>
+            <label class="phone-box" for="phone">
+              Phone for reply
+              <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="Optional" />
+            </label>
 
-        <button id="sendButton" type="submit">Send message</button>
-        <p id="status" class="status" role="status" aria-live="polite"></p>
-      </form>
+            <label class="consent-row">
+              <input id="consent" name="consent" type="checkbox" />
+              <span>I agree to be contacted by text message about this request.</span>
+            </label>
+
+            <label class="hidden-field" aria-hidden="true">
+              Company
+              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+            </label>
+
+            <label class="message-label" for="message">Message</label>
+            <div class="send-row">
+              <textarea id="message" name="message" rows="3" maxlength="900" required placeholder="Type your message here..."></textarea>
+              <button id="sendButton" type="submit">Send</button>
+            </div>
+            <p id="status" class="send-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+      </div>
     </section>
   </main>
 
