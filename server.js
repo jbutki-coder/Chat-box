@@ -9,8 +9,7 @@ const twilio = require("twilio");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Render and most hosting platforms put Express behind a proxy.
-// This lets express-rate-limit safely read the real visitor IP from X-Forwarded-For.
+// Required on Render because Render runs the app behind a proxy.
 app.set("trust proxy", 1);
 
 const allowedFrameAncestors = (process.env.ALLOWED_FRAME_ANCESTORS || "*")
@@ -41,7 +40,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const messageLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  limit: Number(process.env.RATE_LIMIT_PER_10_MINUTES || 5),
+  limit: Number(process.env.RATE_LIMIT_PER_10_MINUTES || 8),
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -61,6 +60,12 @@ function cleanText(value, maxLength) {
 function looksLikePhone(value) {
   if (!value) return false;
   return /^[+]?[(]?[0-9][0-9\s().-]{6,24}$/.test(value);
+}
+
+function maskPhone(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (digits.length < 4) return "configured number";
+  return `***-***-${digits.slice(-4)}`;
 }
 
 function getTwilioClient() {
@@ -90,7 +95,7 @@ function getSenderConfig() {
 }
 
 app.get("/healthz", (_req, res) => {
-  res.json({ ok: true });
+  res.json({ ok: true, app: "old-school-im-sms-chatbox" });
 });
 
 app.post("/api/message", messageLimiter, async (req, res) => {
@@ -98,23 +103,24 @@ app.post("/api/message", messageLimiter, async (req, res) => {
     const name = cleanText(req.body.name, 80);
     const visitorPhone = cleanText(req.body.phone, 30);
     const message = cleanText(req.body.message, 900);
+    const sessionId = cleanText(req.body.sessionId, 40);
     const consent = req.body.consent === true || req.body.consent === "true";
     const honeypot = cleanText(req.body.company, 80);
 
     if (honeypot) {
-      return res.json({ ok: true, message: "Thanks. Your message was sent." });
+      return res.json({ ok: true, message: "Message sent to the site phone." });
     }
 
-    if (!message || message.length < 3) {
-      return res.status(400).json({ ok: false, error: "Please enter a message." });
+    if (!message || message.length < 2) {
+      return res.status(400).json({ ok: false, error: "Type a message first." });
     }
 
     if (visitorPhone && !looksLikePhone(visitorPhone)) {
-      return res.status(400).json({ ok: false, error: "Please enter a valid phone number or leave it blank." });
+      return res.status(400).json({ ok: false, error: "Enter a valid phone number or leave it blank." });
     }
 
     if (visitorPhone && !consent) {
-      return res.status(400).json({ ok: false, error: "Please check the consent box so someone can reply by text." });
+      return res.status(400).json({ ok: false, error: "Check the consent box so someone can reply by text." });
     }
 
     const notifyPhoneNumber = process.env.NOTIFY_PHONE_NUMBER;
@@ -123,9 +129,10 @@ app.post("/api/message", messageLimiter, async (req, res) => {
     }
 
     const smsBody = [
-      "New website chatbox message",
+      "New website instant message",
+      `Session: ${sessionId || "not provided"}`,
       `Name: ${name || "Not provided"}`,
-      `Phone: ${visitorPhone || "Not provided"}`,
+      `Visitor phone: ${visitorPhone || "Not provided"}`,
       `Consent to reply by text: ${consent ? "Yes" : "No"}`,
       "",
       message,
@@ -133,23 +140,37 @@ app.post("/api/message", messageLimiter, async (req, res) => {
 
     if (process.env.DRY_RUN === "true") {
       console.log("DRY_RUN message:", smsBody);
-      return res.json({ ok: true, message: "Dry run worked. No SMS was sent." });
+      return res.json({ ok: true, dryRun: true, message: "Test mode is on. The chat worked, but no SMS was sent." });
     }
 
     const client = getTwilioClient();
-    await client.messages.create({
+    const sentMessage = await client.messages.create({
       body: smsBody,
       to: notifyPhoneNumber,
       ...getSenderConfig(),
     });
 
-    return res.json({ ok: true, message: "Thanks. Your message was sent." });
+    console.log("Twilio message created:", {
+      sid: sentMessage.sid,
+      status: sentMessage.status,
+      to: maskPhone(notifyPhoneNumber),
+    });
+
+    return res.json({
+      ok: true,
+      message: "Message sent to the site phone.",
+      smsStatus: sentMessage.status,
+    });
   } catch (error) {
-    console.error("Message send failed:", error.message);
+    console.error("Message send failed:", {
+      message: error.message,
+      code: error.code,
+      status: error.status,
+    });
     return res.status(500).json({ ok: false, error: "The message could not be sent right now." });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Chatbox SMS app listening on port ${PORT}`);
+  console.log(`Old-school IM SMS chatbox listening on port ${PORT}`);
 });
